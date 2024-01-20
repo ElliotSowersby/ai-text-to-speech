@@ -32,7 +32,7 @@ function ai_tts_save_audio_file($response, $post_id) {
     error_log("test:" . $file_url);
 
     // Sanitize
-    $file_url = esc_url_raw($file_url);
+    $file_url = sanitize_text_field($file_url);
     $voice = sanitize_text_field($_POST['voice']);
 
     // Save the file URL to post meta
