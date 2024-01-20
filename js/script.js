@@ -21,6 +21,9 @@ jQuery(document).ready(function($) {
         $('#tts-player-audio').prop('currentTime', 0);
         $('#tts-player-audio').attr('src', '');
 
+        // Set voice select to disabled
+        $('#ai-tts-voice').attr('disabled', true);
+
         // AJAX request to generate TTS
         $.post(ajaxUrl, {
             action: 'generate_tts',
@@ -30,14 +33,25 @@ jQuery(document).ready(function($) {
         }, function(response) {
             console.log(response);
             if (response.success) {
-                $('#generate-tts-content').show();
+                $('#generate-tts-content').hide();
+                $('#tts-cost').hide();
                 $('#tts-player').show();
                 $('#delete-tts').show();
                 $('#tts-loading').hide();
                 $('#tts-file-size').hide();
+                $('#ai-tts-voice').attr('disabled', true);
+                $('#tts-link-text').val(response.data.file_url);
                 $('#tts-player-audio').attr('src', response.data.file_url);
                 $('#tts-player-audio').trigger('load');
-                $('#tts-player-audio').trigger('play');
+                // If tab not open
+                if (!document.hasFocus()) {
+                    // Set browser tab title
+                    var originalTitle = document.title;
+                    document.title = '*TTS Generated* - ' + originalTitle;
+                    $(window).focus(function() {
+                        document.title = originalTitle;
+                    });
+                }
             } else {
                 alert('Something went wrong!');
             }
@@ -62,11 +76,14 @@ jQuery(document).ready(function($) {
         }, function(response) {
             console.log(response);
             if (response.success) {
+                $('#generate-tts-content').show();
+                $('#tts-cost').show();
                 $('#delete-tts').show();
                 $('#tts-deleting').hide();
                 $('#tts-player').hide();
                 $('#delete-tts').hide();
                 $('#tts-file-size').hide();
+                $('#ai-tts-voice').attr('disabled', false);
                 $('#tts-player-audio').attr('src', '');
             } else {
                 alert('Something went wrong!' + response.data);
@@ -81,6 +98,10 @@ jQuery(document).ready(function($) {
         el.select();
         document.execCommand('copy');
         document.body.removeChild(el);
-        alert('Copied to clipboard!');
+        // Hightlight the text field for 1 second
+        $('#tts-link-text').select();
+        setTimeout(function() {
+            $('#tts-link-text').blur();
+        }, 1000);
     });
 });

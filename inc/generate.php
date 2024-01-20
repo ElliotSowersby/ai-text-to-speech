@@ -20,7 +20,7 @@ function ai_tts_generate_tts_callback() {
 
     // Add title to the beginning of the post content
     $post_title = get_post_field('post_title', $post_id);
-    $post_content = '... ' . $post_title . ' [break] ' . $post_content;
+    $post_content = $post_title . '. ' . $post_content;
 
     // Add [pause] before and after headers
     $post_content = preg_replace('/<h[1-6]>(.*?)<\/h[1-6]>/', '[pause] $0 [pause]', $post_content);
@@ -33,11 +33,12 @@ function ai_tts_generate_tts_callback() {
     // Convert to plain text and nothing else
     $post_content = html_entity_decode($post_content);
     $post_content = wp_strip_all_tags($post_content, true);
+    // Trim any whitespace
+    $post_content = trim($post_content);
 
-    // Split content more than 500 characters into multiple requests
-    $chunks = str_split($post_content, 4096);
-    
     // Split content into chunks
+    $chunks = ai_tts_split_content($post_content);
+
     $combined_audio_data = '';
     $i = 0;
 
@@ -70,8 +71,39 @@ function ai_tts_generate_tts_callback() {
     // Save the file and get the URL
     $file_url = ai_tts_save_audio_file($combined_audio_data, $post_id);
 
-    wp_send_json_success([
-        'file_url' => $file_url
-    ]);
+    error_log('File URL: ' . $file_url);
 
+    if(!$file_url) {
+        wp_send_json_error(['message' => 'Error saving file.']);
+    }
+
+    wp_send_json_success(['file_url' => $file_url]);
+
+}
+
+function ai_tts_split_content($content, $chunkSize = 4096) {
+    $chunks = [];
+    $length = strlen($content);
+    $start = 0;
+
+    while ($start < $length) {
+        // Determine the end position of the chunk
+        $end = min($start + $chunkSize, $length);
+
+        // Find the last space in the current chunk to avoid splitting a word
+        if ($end < $length) {
+            $lastSpace = strrpos($content, ' ', $start - $end);
+            if ($lastSpace !== false) {
+                $end = $lastSpace;
+            }
+        }
+
+        // Extract the chunk and add to the array
+        $chunks[] = substr($content, $start, $end - $start);
+
+        // Move the start position to the next character after the end of the chunk
+        $start = $end + 1;
+    }
+
+    return $chunks;
 }

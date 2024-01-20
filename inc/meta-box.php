@@ -36,18 +36,18 @@ function ai_tts_meta_box_callback($post) {
     </p>
 
     <!-- Estimate of cost -->
-    <p id="tts-cost">
+    <p id="tts-cost" <?php if(get_post_meta($post->ID, 'ai_tts_file_url', true)) { echo 'style="display: none;"'; } ?>>
         <span id="tts-cost-characters" style="display: inline-block;">0</span> <?php echo esc_html__('characters.', 'ai-text-to-speech'); ?>
         <span title="<?php echo esc_html__('Estimate for $0.015 per character.', 'ai-text-to-speech'); ?>"><?php echo esc_html__('Estimate cost:', 'ai-text-to-speech'); ?> <span id="tts-cost-amount" style="display: inline-block;">$0.00</span></span>
     </p>
 
     <!-- Generate TTS button -->
-    <p id="generate-tts-content">
+    <p id="generate-tts-content" <?php if(get_post_meta($post->ID, 'ai_tts_file_url', true)) { echo 'style="display: none;"'; } ?> style="margin: 0;">
         <button id="generate-tts" data-postid="<?php echo $post->ID; ?>"
             data-nonce="<?php echo wp_create_nonce('ai_tts_nonce'); ?>"
             class="button button-primary" style="width: 100%;">
             <?php echo esc_html__('Generate TTS', 'ai-text-to-speech'); ?>
-        </button><br/>
+        </button>
     </p>
 
     <div id="tts-loading" style="display: none;">
@@ -77,6 +77,11 @@ function ai_tts_meta_box_callback($post) {
         <?php } ?></p>
 
         <audio id="tts-player-audio" controls src="<?php echo esc_url($tts_file_url); ?>" style="background: #f3f3f3; border-radius: 5px;"></audio>
+
+        <!-- Link Text Field -->
+        <p style="margin: 5px 0 5px 0;">
+            <input type="text" id="tts-link-text" name="tts-link-text" value="<?php echo esc_attr(get_post_meta($post->ID, 'ai_tts_file_url', true)); ?>" style="width: 100%;"/>
+        </p>
 
         <!-- Copy File URL -->
         <p id="tts-copy-url" style="font-size: 10px; text-align: center; margin: 5px 0 5px 0; padding-bottom: 0;">

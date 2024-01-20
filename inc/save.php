@@ -15,19 +15,38 @@ function ai_tts_save_audio_file($response, $post_id) {
         wp_send_json_error(['message' => 'Nonce verification failed']);
     }
 
+    // Check if folder exists, if not create it
+    if (!file_exists(AI_TTS_UPLOAD_DIR)) {
+        mkdir(AI_TTS_UPLOAD_DIR, 0755, true);
+    }
+
+    // Convert post title to URL friendly string
+    $post_title = get_post_field('post_title', $post_id);
+    $post_title = sanitize_title($post_title);
+    $post_title = implode('-', array_slice(explode('-', $post_title), 0, 10));
+
+    // Delete any other files that start with post-$post_id-
+    $files = glob(AI_TTS_UPLOAD_DIR . 'post-' . $post_id . '-*');
+    foreach ($files as $file) {
+        if (is_file($file)) {
+            unlink($file);
+        }
+    }
+
+    // Random string for file name
+    $random_string = wp_generate_password(2, false);
+
 	// Save the file to the uploads directory
-	$file_name = 'post-' . $post_id . '.mp3';
+	$file_name = 'post-' . $post_id . '-' . $random_string . '-' . $post_title . '.mp3';
 	$file_path = AI_TTS_UPLOAD_DIR . $file_name;
-    
+
     // Convert the response to an MP3 file and keep file duration
     $mp3 = file_get_contents('data:audio/mp3;base64,' . base64_encode($response));
 
     // Save the file to the uploads directory
     file_put_contents($file_path, $mp3);
 
-    $file_url = content_url('/uploads/ai-tts/' . $file_name);
-
-    error_log("test:" . $file_url);
+    $file_url = content_url('/uploads/ai-text-to-speech/' . $file_name);
 
     // Sanitize
     $file_url = sanitize_text_field($file_url);
@@ -38,10 +57,9 @@ function ai_tts_save_audio_file($response, $post_id) {
     update_post_meta($post_id, 'ai_tts_voice', $voice);
     update_post_meta($post_id, 'ai_tts_location', 'local');
 
-    if($file_url) {
-        wp_send_json_success(['file_url' => $file_url]);
-    } else {
-        wp_send_json_error(['message' => 'Error saving file.']);
-    }
+    error_log('File saved: ' . $file_url);
+
+    // Return the file URL
+    return $file_url;
 
 }

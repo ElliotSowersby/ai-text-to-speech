@@ -27,13 +27,28 @@ If you have any suggestions for additional functionality, need any help, or have
 
 == Frequently Asked Questions ==
 
+= How do I get an OpenAI key? =
+
+You can get an OpenAI key by signing up for an account at [OpenAI.com](https://openai.com/).
+
+= What languages are supported? =
+
+OpenAI TTS currently supports the following languages:
+
+English, Afrikaans, Arabic, Armenian, Azerbaijani, Belarusian, Bosnian, Bulgarian, Catalan, Chinese, Croatian, Czech, Danish, Dutch, Estonian, Finnish, French, Galician, German, Greek, Hebrew, Hindi, Hungarian, Icelandic, Indonesian, Italian, Japanese, Kannada, Kazakh, Korean, Latvian, Lithuanian, Macedonian, Malay, Marathi, Maori, Nepali, Norwegian, Persian, Polish, Portuguese, Romanian, Russian, Serbian, Slovak, Slovenian, Spanish, Swahili, Swedish, Tagalog, Tamil, Thai, Turkish, Ukrainian, Urdu, Vietnamese, and Welsh.
+
+You can generate spoken audio in these languages by providing the input text in the language of your choice.
+
 = Do you provide support? =
+
 Yes. If you need any help setting up the affiliate plugin, please free to <a href="https://wordpress.org/support/plugin/ai-text-to-speech/#new-topic-0">get in touch</a> and we'll be happy to help!
 
 = How can I report issues/bugs with the plugin? =
+
 You can report feature bugs by creating a <a href="https://wordpress.org/support/plugin/ai-text-to-speech/#new-topic-0">support ticket</a>. Please provide as much information as possible to make it easier for us to find a solution for you.
 
 = How can I report security bugs? =
+
 You can report security bugs through the Patchstack Vulnerability Disclosure Program. The Patchstack team help validate, triage and handle any security vulnerabilities. [Report a security vulnerability.](https://patchstack.com/database/vdp/woo-coupon-usage)
 
 == Screenshots ==

@@ -1,7 +1,7 @@
 <?php
 /**
 * Plugin Name: AI Text-to-Speech
-* Description: Generates a text-to-speech recording of posts.
+* Description: Easily generate and display an audio version for your posts using OpenAI's TTS API.
 * Version: 1.0.0
 * Author: Elliot Sowersby, RelyWP
 * Author URI: https://relywp.com
@@ -9,6 +9,10 @@
 * Text Domain: ai-text-to-speech
 * Domain Path: /languages
 */
+
+if ( !defined( 'ABSPATH' ) ) {
+    exit;
+}
 
 // Define the path for the uploads
 define('AI_TTS_UPLOAD_DIR', WP_CONTENT_DIR . '/uploads/ai-text-to-speech/');
@@ -55,22 +59,19 @@ function ai_tts_enqueue_scripts() {
 // Enqueue CSS
 add_action('admin_enqueue_scripts', 'ai_tts_enqueue_styles');
 function ai_tts_enqueue_styles() {
-
-    // Only on the post edit screen or plugin settings page
+    // Only on the post edit screen
     global $post;
     if(!is_object($post) || $post->post_type != 'post') {
-        if(!isset($_GET['page']) || $_GET['page'] != 'ai-tts') {
-            return;
-        }
+        return;
     }
-    wp_enqueue_style('ai-tts-style', plugin_dir_url(__FILE__) . 'css/style.css', array(), '1.0.0');
+    wp_enqueue_style('ai-tts-style', plugin_dir_url(__FILE__) . 'css/post.css', array(), '1.0.0');
 }
 
 // Enqueue CSS admin settings page
 add_action('admin_enqueue_scripts', 'ai_tts_enqueue_styles_admin');
 function ai_tts_enqueue_styles_admin() {
     // Only on the plugin settings page
-    if(!isset($_GET['page']) || $_GET['page'] != 'ai-tts') {
+    if(!isset($_GET['page']) || $_GET['page'] != 'ai-text-to-speech') {
         return;
     }
     wp_enqueue_style('ai-tts-style-admin', plugin_dir_url(__FILE__) . 'css/settings.css', array(), '1.0.0');
