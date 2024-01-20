@@ -68,15 +68,9 @@ function ai_tts_generate_tts_callback() {
         $combined_audio_data .= $response;
 
     }
-
-    // Sanitize
-    $combined_audio_data = sanitize_text_field($combined_audio_data);
     
     // Save the file and get the URL
     $file_url = ai_tts_save_audio_file($combined_audio_data, $post_id);
-
-    // Sanitize
-    $file_url = esc_url_raw($file_url);
 
     wp_send_json_success([
         'file_url' => $file_url

@@ -36,6 +36,7 @@ jQuery(document).ready(function($) {
                 $('#tts-loading').hide();
                 $('#tts-file-size').hide();
                 $('#tts-player-audio').attr('src', response.data.file_url);
+                $('#tts-player-audio').trigger('load');
                 $('#tts-player-audio').trigger('play');
             } else {
                 alert('Something went wrong!');

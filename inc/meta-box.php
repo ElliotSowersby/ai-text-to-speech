@@ -8,7 +8,7 @@ add_action('add_meta_boxes', 'ai_tts_add_meta_box');
 function ai_tts_add_meta_box() {
     add_meta_box(
         'ai-tts-meta-box',
-        'Simple AI Text to Speech',
+        'AI Text to Speech',
         'ai_tts_meta_box_callback',
         'post',
         'side',

@@ -22,11 +22,8 @@ function ai_tts_delete_tts_callback() {
     $post_id = isset($_POST['post_id']) ? intval($_POST['post_id']) : 0;
     $file_url = get_post_meta($post_id, 'ai_tts_file_url', true);
 
-    error_log("test1:" . $file_url);
-    
     if ($file_url) {
         $file_path = str_replace(content_url(), WP_CONTENT_DIR, $file_url);
-        error_log("test2:" . $file_path);
         unlink($file_path);
     }
 

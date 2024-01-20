@@ -28,7 +28,7 @@ function ai_tts_options_page() {
     $options = ai_tts_get_options();
     ?>
     <div class="wrap">
-        <h1>AI Text-to-Speech</h1>
+        <h1><?php echo __('AI Text-to-Speech', 'ai-text-to-speech'); ?></h1>
         <p>Settings for the AI Text-to-Speech plugin. When configured, you will be able to generate a TTS audio file for any post on your website, which is automatically displayed in an audio player at the top of the post.</p>
         <!-- Key input -->
         <form method="post" action="options.php">
@@ -101,7 +101,7 @@ function ai_tts_options_page() {
                     <td>
                         <select name="ai_tts_settings[file_storage_location]">
                             <option value="local" <?php selected($options['file_storage_location'], 'local'); ?>>Local</option>
-                            <option value="dropbox" disabled>Third-Party Options Coming Soon..</option>
+                            <option value="dropbox" disabled>Third-Party Locations Coming Soon..</option>
                         </select>
                     </td>
                 </tr>
