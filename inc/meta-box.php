@@ -40,59 +40,6 @@ function ai_tts_meta_box_callback($post) {
         <span id="tts-cost-characters" style="display: inline-block;">0</span> characters.
         <span title="Estimate for $0.015 per character.">Estimate cost: <span id="tts-cost-amount" style="display: inline-block;">$0.00</span></span>
     </p>
-    <script>
-    (function(wp){
-        const { subscribe, select } = wp.data;
-
-        let isSaving = false;
-        let didSave = false;
-
-        // Function to update cost and length
-        function updateCostAndLength() {
-            const editor = select('core/editor');
-            if (!editor || !editor.getEditedPostContent) {
-                // Retry after a short delay if the editor is not ready
-                setTimeout(updateCostAndLength, 500);
-                return;
-            }
-
-            const newContent = editor.getEditedPostContent();
-            const newTitle = editor.getEditedPostAttribute('title');
-
-            const textContent = newContent.replace(/<\/?[^>]+(>|$)/g, "").replace(/<!--[\s\S]*?-->/g, "");
-            const totalLength = textContent.length + newTitle.length;
-            const cost = (totalLength / 1000) * 0.015;
-
-            document.getElementById('tts-cost-amount').innerHTML = '$' + cost.toFixed(4);
-            document.getElementById('tts-cost-characters').innerHTML = totalLength;
-        }
-
-        // Try to run on page load after 4 seconds
-        setTimeout(updateCostAndLength, 4000);
-
-        subscribe(() => {
-            const editor = select('core/editor');
-            if (!editor) {
-                return;
-            }
-
-            const isSavingPost = editor.isSavingPost();
-            const didSaveSucceed = editor.didPostSaveRequestSucceed();
-            const didSaveFail = editor.didPostSaveRequestFail();
-
-            if (isSaving && (didSaveSucceed || didSaveFail)) {
-                didSave = true;
-            }
-
-            isSaving = isSavingPost;
-
-            if (didSave) {
-                didSave = false;
-                updateCostAndLength();
-            }
-        });
-    })(window.wp);
-    </script>
 
     <!-- Generate TTS button -->
     <p id="generate-tts-content">
@@ -102,21 +49,6 @@ function ai_tts_meta_box_callback($post) {
             Generate TTS
         </button><br/>
     </p>
-
-    <style>
-    .tts-spin {
-        animation: dashicons-tts-spin 1s infinite;
-        animation-timing-function: linear;
-    }
-    @keyframes dashicons-tts-spin {
-    0% {
-        transform: rotate( 0deg );
-    }
-    100% {
-        transform: rotate( 360deg );
-    }
-    }
-    </style>
 
     <div id="tts-loading" style="display: none;">
         <p style="margin: 0;"><span class="dashicons dashicons-update dashicons-spin tts-spin"></span> Generating audio file...</p>

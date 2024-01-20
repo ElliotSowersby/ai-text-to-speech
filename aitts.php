@@ -49,6 +49,7 @@ function ai_tts_enqueue_scripts() {
         return;
     }
     wp_enqueue_script('ai-tts-script', plugin_dir_url(__FILE__) . 'js/script.js', array('jquery'), '1.0.0', true);
+    wp_enqueue_script('ai-tts-post-script', plugin_dir_url(__FILE__) . 'js/post.js', '', '1.0.0', true);
 }
 
 // Enqueue CSS
