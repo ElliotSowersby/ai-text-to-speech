@@ -15,8 +15,6 @@ function ai_tts_save_audio_file($response, $post_id) {
         wp_send_json_error(['message' => 'Nonce verification failed']);
     }
 
-    $options = ai_tts_get_options();
-    
 	// Save the file to the uploads directory
 	$file_name = 'post-' . $post_id . '.mp3';
 	$file_path = AI_TTS_UPLOAD_DIR . $file_name;

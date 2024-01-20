@@ -1,0 +1,9 @@
+textarea,
+select,
+input[type="text"] {
+    width: 250px;
+    padding: 5px 10px;
+}
+select {
+    height: 40px;
+}

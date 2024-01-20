@@ -16,8 +16,6 @@ function ai_tts_delete_tts_callback() {
         wp_send_json_error(['message' => 'Nonce verification failed']);
     }
 
-    $options = ai_tts_get_options();
-
     // Delete the audio file
     $post_id = isset($_POST['post_id']) ? intval($_POST['post_id']) : 0;
     $file_url = get_post_meta($post_id, 'ai_tts_file_url', true);

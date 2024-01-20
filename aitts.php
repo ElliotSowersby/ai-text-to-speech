@@ -55,6 +55,7 @@ function ai_tts_enqueue_scripts() {
 // Enqueue CSS
 add_action('admin_enqueue_scripts', 'ai_tts_enqueue_styles');
 function ai_tts_enqueue_styles() {
+
     // Only on the post edit screen or plugin settings page
     global $post;
     if(!is_object($post) || $post->post_type != 'post') {
@@ -63,4 +64,14 @@ function ai_tts_enqueue_styles() {
         }
     }
     wp_enqueue_style('ai-tts-style', plugin_dir_url(__FILE__) . 'css/style.css', array(), '1.0.0');
+}
+
+// Enqueue CSS admin settings page
+add_action('admin_enqueue_scripts', 'ai_tts_enqueue_styles_admin');
+function ai_tts_enqueue_styles_admin() {
+    // Only on the plugin settings page
+    if(!isset($_GET['page']) || $_GET['page'] != 'ai-tts') {
+        return;
+    }
+    wp_enqueue_style('ai-tts-style-admin', plugin_dir_url(__FILE__) . 'css/settings.css', array(), '1.0.0');
 }

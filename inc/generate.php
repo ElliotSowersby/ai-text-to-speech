@@ -15,8 +15,6 @@ function ai_tts_generate_tts_callback() {
         wp_send_json_error(['message' => 'Nonce verification failed']);
     }
 
-    $options = ai_tts_get_options();
-
     $post_id = isset($_POST['post_id']) ? intval($_POST['post_id']) : 0;
     $post_content = get_post_field('post_content', $post_id);
 
