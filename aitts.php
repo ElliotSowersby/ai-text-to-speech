@@ -47,9 +47,20 @@ function ai_tts_redirect() {
 // Enqueue JavaScript
 add_action('admin_enqueue_scripts', 'ai_tts_enqueue_scripts');
 function ai_tts_enqueue_scripts() {
+
     // Only on the post edit screen
     global $post;
-    if(!is_object($post) || $post->post_type != 'post') {
+
+    $post_types_option = ai_tts_get_option('post_types');
+    $post_types_to_enable = ai_tts_get_option('post_types_to_enable');
+    if($post_types_option == 'all') {
+        $post_types = get_post_types(array('public' => true));
+    } else {
+        $post_types = $post_types_to_enable;
+    }
+
+    $post_types = get_post_types(array('public' => true));
+    if(!is_object($post) || !in_array($post->post_type, $post_types)) {
         return;
     }
     wp_enqueue_script('ai-tts-script', plugin_dir_url(__FILE__) . 'js/script.js', array('jquery'), '1.0.0', true);
@@ -59,9 +70,19 @@ function ai_tts_enqueue_scripts() {
 // Enqueue CSS
 add_action('admin_enqueue_scripts', 'ai_tts_enqueue_styles');
 function ai_tts_enqueue_styles() {
-    // Only on the post edit screen
+
+    // On all post type post edit screen
     global $post;
-    if(!is_object($post) || $post->post_type != 'post') {
+
+    $post_types_option = ai_tts_get_option('post_types');
+    $post_types_to_enable = ai_tts_get_option('post_types_to_enable');
+    if($post_types_option == 'all') {
+        $post_types = get_post_types(array('public' => true));
+    } else {
+        $post_types = $post_types_to_enable;
+    }
+
+    if(!is_object($post) || !in_array($post->post_type, $post_types)) {
         return;
     }
     wp_enqueue_style('ai-tts-style', plugin_dir_url(__FILE__) . 'css/post.css', array(), '1.0.0');

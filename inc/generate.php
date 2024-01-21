@@ -6,6 +6,8 @@ if(!defined('ABSPATH')) {
 add_action('wp_ajax_generate_tts', 'ai_tts_generate_tts_callback');
 function ai_tts_generate_tts_callback() {
 
+    // Clear memory
+
     // If user is admin
     if (!current_user_can('manage_options')) {
         wp_send_json_error(['message' => 'You do not have permission to delete this file.']);
@@ -17,10 +19,6 @@ function ai_tts_generate_tts_callback() {
 
     $post_id = isset($_POST['post_id']) ? intval($_POST['post_id']) : 0;
     $post_content = get_post_field('post_content', $post_id);
-
-    // Add title to the beginning of the post content
-    $post_title = get_post_field('post_title', $post_id);
-    $post_content = $post_title . '. ' . $post_content;
 
     // Add [pause] before and after headers
     $post_content = preg_replace('/<h[1-6]>(.*?)<\/h[1-6]>/', '[pause] $0 [pause]', $post_content);
@@ -36,11 +34,28 @@ function ai_tts_generate_tts_callback() {
     // Trim any whitespace
     $post_content = trim($post_content);
 
-    // Split content into chunks
-    $chunks = ai_tts_split_content($post_content);
+    // Split content into chunks of 1 sentence per chunk
+    $chunks = preg_split('/(?<=[.?!])\s+(?=[a-z])/i', $post_content);
+    // Add title as first chunk
+    $chunks = array_merge([get_the_title($post_id)], $chunks);
+
+    // Add [pause] to the end of each chunk
+    $chunks = array_map(function($chunk) {
+        return ' - ' . $chunk;
+    }, $chunks);
+    // Remove empty chunks
+    $chunks = array_filter($chunks);
+    // Remove whitespace
+    $chunks = array_map('trim', $chunks);
 
     $combined_audio_data = '';
     $i = 0;
+
+    $api_key = get_option('ai_tts_api_key');
+    // Get the API key from wp-config if it's defined
+    if(defined('AI_TTS_API_KEY')) {
+        $api_key = AI_TTS_API_KEY;
+    }
 
     // Loop through the chunks
     foreach ($chunks as $chunk) {
@@ -52,7 +67,7 @@ function ai_tts_generate_tts_callback() {
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Authorization: Bearer ' . get_option('ai_tts_api_key'),
+            'Authorization: Bearer ' . $api_key,
             'Content-Type: application/json'
         ]);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
@@ -62,48 +77,32 @@ function ai_tts_generate_tts_callback() {
             'response_format' => 'aac',
         ]));
 
+        // Execute the API request
         $response = curl_exec($ch);
         
         $combined_audio_data .= $response;
+
+        // Clear memory
+        unset($chunk);
+        unset($response);
+
+        // Close cURL request
+        curl_close($ch);
 
     }
     
     // Save the file and get the URL
     $file_url = ai_tts_save_audio_file($combined_audio_data, $post_id);
 
-    error_log('File URL: ' . $file_url);
+    // File URL filter
+    $file_url = apply_filters('ai_tts_file_url', $file_url);
 
+    // If file URL is empty
     if(!$file_url) {
         wp_send_json_error(['message' => 'Error saving file.']);
     }
 
+    // Return the file URL
     wp_send_json_success(['file_url' => $file_url]);
 
-}
-
-function ai_tts_split_content($content, $chunkSize = 4096) {
-    $chunks = [];
-    $length = strlen($content);
-    $start = 0;
-
-    while ($start < $length) {
-        // Determine the end position of the chunk
-        $end = min($start + $chunkSize, $length);
-
-        // Find the last space in the current chunk to avoid splitting a word
-        if ($end < $length) {
-            $lastSpace = strrpos($content, ' ', $start - $end);
-            if ($lastSpace !== false) {
-                $end = $lastSpace;
-            }
-        }
-
-        // Extract the chunk and add to the array
-        $chunks[] = substr($content, $start, $end - $start);
-
-        // Move the start position to the next character after the end of the chunk
-        $start = $end + 1;
-    }
-
-    return $chunks;
 }

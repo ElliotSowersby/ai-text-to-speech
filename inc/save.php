@@ -57,8 +57,6 @@ function ai_tts_save_audio_file($response, $post_id) {
     update_post_meta($post_id, 'ai_tts_voice', $voice);
     update_post_meta($post_id, 'ai_tts_location', 'local');
 
-    error_log('File saved: ' . $file_url);
-
     // Return the file URL
     return $file_url;
 

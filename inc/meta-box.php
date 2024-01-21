@@ -12,8 +12,20 @@ function ai_tts_add_meta_box() {
         'ai_tts_meta_box_callback',
         'post',
         'side',
-        'high'
+        'low'
     );
+    // Add to all other post types
+    $post_types = get_post_types(array('public' => true));
+    foreach ($post_types as $post_type) {
+        add_meta_box(
+            'ai-tts-meta-box',
+            esc_html__('AI Text to Speech', 'ai-text-to-speech'),
+            'ai_tts_meta_box_callback',
+            $post_type,
+            'side',
+            'low'
+        );
+    }
 }
 
 // Meta box display callback
