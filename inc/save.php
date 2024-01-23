@@ -44,9 +44,19 @@ function ai_tts_save_audio_file($response, $post_id) {
     $mp3 = file_get_contents('data:audio/mp3;base64,' . base64_encode($response));
 
     // Save the file to the uploads directory
-    file_put_contents($file_path, $mp3);
+    global $wp_filesystem;
+    if (empty($wp_filesystem)) {
+        require_once (ABSPATH . '/wp-admin/includes/file.php');
+        WP_Filesystem();
+    }
+    $wp_filesystem->put_contents($file_path, $mp3, FS_CHMOD_FILE);
 
     $file_url = content_url('/uploads/ai-text-to-speech/' . $file_name);
+
+    // Check if successful
+    if (!$file_url) {
+        wp_send_json_error(['message' => 'There was an error saving the file.']);
+    }
 
     // Sanitize
     $file_url = sanitize_text_field($file_url);

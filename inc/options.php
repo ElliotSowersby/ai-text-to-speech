@@ -12,8 +12,8 @@ function ai_tts_add_admin_menu() {
 // Get Specific Option
 function ai_tts_get_option($option) {
     $options = get_option('ai_tts_settings');
-    if(isset($options[$option])) {
-        return $options[$option];
+    if(isset($options[$option]) && $options[$option] != '') {
+        return sanitize_text_field($options[$option]);
     }
     $default_options = [
         'file_storage_location' => 'local',
@@ -26,6 +26,8 @@ function ai_tts_get_option($option) {
         'player_speed' => '1',
         'post_types' => 'all',
         'post_types_to_enable' => array(),
+        'include_author' => true,
+        'include_date' => true,
     ];
     $default_options = array_map('sanitize_text_field', $default_options);
     return $default_options[$option];
@@ -65,7 +67,7 @@ function ai_tts_options_page() {
                         <p>
                             <a class="api-help-button" href="#"><?php echo esc_html__('How to get started', 'ai-text-to-speech'); ?><span class="dashicons dashicons-arrow-down-alt2" style="text-decoration: none; font-size: 14px; margin-top: 5px;"></span></a>
                         </p>
-                        <p class="api-help" style="display: none; padding: 10px; background-color: #fff; border-radius: 5px; display: inline-block;">
+                        <p class="api-help" style="display: none; padding: 10px; background-color: #fff; border-radius: 5px;">
                             - <?php echo sprintf(wp_kses_post(__('To get started, you will need to <a href="%s" target="_blank">create an account with OpenAI</a>.', 'ai-text-to-speech')), 'https://platform.openai.com/signup'); ?>
                             <br/>- <?php echo esc_html__('Once you have created an account, you can generate an API secret key here:', 'ai-text-to-speech'); ?> <a href="https://platform.openai.com/api-keys" target="_blank"><?php echo esc_html__('Generate API Key', 'ai-text-to-speech'); ?></a> 
                             <br/>- <?php echo esc_html__('Copy and paste the API key into the field above, and click Save Changes.', 'ai-text-to-speech'); ?>
@@ -77,7 +79,11 @@ function ai_tts_options_page() {
                 <script>
                 jQuery(document).ready(function($) {
                     $('.api-help-button').click(function() {
-                        $('.api-help').toggle();
+                        if($('.api-help').is(':visible')) {
+                            $('.api-help').css('display', 'none');
+                        } else {
+                            $('.api-help').css('display', 'inline-block');
+                        }
                     });
                 });
                 </script>
@@ -95,35 +101,46 @@ function ai_tts_options_page() {
                     <td>
                         <?php
                         $api_key = get_option('ai_tts_api_key');
-                        if ($api_key) {
-                            $ch = curl_init();
-                            $date = date('Y-m-d');
-                            curl_setopt($ch, CURLOPT_URL, 'https://api.openai.com/v1/usage?date=' . $date);
-                            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-                            curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                                'Authorization: Bearer ' . $api_key,
-                            ]);
-                            $response = curl_exec($ch);
-                            $response = json_decode($response);
 
-                            // Assuming $response is your stdClass object containing tts_api_data
+                        if ($api_key) {
+                            $date = gmdate('Y-m-d');
+                            $url = 'https://api.openai.com/v1/usage?date=' . $date;
+                            $args = array(
+                                'headers' => array(
+                                    'Authorization' => 'Bearer ' . $api_key
+                                )
+                            );
+
+                            $response = wp_remote_get($url, $args);
+
+                            // Check for WP_Error or non-200 status code.
+                            if (is_wp_error($response) || 200 !== wp_remote_retrieve_response_code($response)) {
+                                echo esc_html__('Error fetching data.', 'ai-text-to-speech');
+                                return;
+                            }
+
+                            $body = json_decode(wp_remote_retrieve_body($response));
+
+                            // Process the response body.
                             $total_characters_used = 0;
                             $total_requests = 0;
 
-                            if (isset($response->tts_api_data) && is_array($response->tts_api_data)) {
-                                foreach ($response->tts_api_data as $item) {
-                                    // Ensure that the required properties exist
+                            if (isset($body->tts_api_data) && is_array($body->tts_api_data)) {
+                                foreach ($body->tts_api_data as $item) {
+                                    // Ensure that the required properties exist.
                                     if (isset($item->num_characters) && isset($item->num_requests)) {
                                         $total_characters_used += $item->num_characters;
                                         $total_requests += $item->num_requests;
                                     }
                                 }
                             }
-                            echo esc_html__('Total Characters Used:', 'ai-text-to-speech') . " " . $total_characters_used . "<br>";
-                            echo esc_html__('Total Requests:', 'ai-text-to-speech') . " " . $total_requests;
+
+                            // Output the results.
+                            echo esc_html__('Total Characters Used:', 'ai-text-to-speech') . " " . esc_html($total_characters_used) . "<br>";
+                            echo esc_html__('Total Requests:', 'ai-text-to-speech') . " " . esc_html($total_requests);
                             $total_cost = $total_characters_used / 1000 * 0.015;
                             $total_cost = round($total_cost, 2);
-                            echo "<br>" . esc_html__('Total Cost:', 'ai-text-to-speech') . " $" . $total_cost;
+                            echo "<br>" . esc_html__('Total Cost:', 'ai-text-to-speech') . " $" . esc_html($total_cost);
                         } else {
                             echo esc_html__('No API key set.', 'ai-text-to-speech');
                         }
@@ -198,6 +215,7 @@ function ai_tts_options_page() {
                     <tr valign="top">
                         <th scope="row"><?php echo esc_html__('Show Player Label', 'ai-text-to-speech'); ?></th>
                         <td>
+                            <input type="hidden" name="ai_tts_settings[show_player_label]" value="0">
                             <input type="checkbox" name="ai_tts_settings[show_player_label]" value="1" <?php checked(ai_tts_get_option('show_player_label'), true); ?> /> <?php echo esc_html__('Show a text label under the audio player.', 'ai-text-to-speech'); ?>
                             <p class="description" style="font-size: 12px;"><?php echo sprintf(wp_kses_post(__('Note: The <a href="%s" target="_blank">OpenAI usage policies</a> require you to provide a clear disclosure to end users that the TTS voice they are hearing is AI-generated and not a human voice.', 'ai-text-to-speech')), 'https://openai.com/policies/usage-policies'); ?></p>
                         </td>
@@ -282,7 +300,37 @@ function ai_tts_options_page() {
                     </script>
                 </table>
 
+                <hr/>
+
+                <table class="form-table">
+                    <!-- Include "Author" in the TTS -->
+                    <tr valign="top">
+                        <th scope="row">
+                            <?php echo esc_html__('Author Name', 'ai-text-to-speech'); ?>
+                        </th>
+                        <td>
+                            <input type="hidden" name="ai_tts_settings[include_author]" value="0" />
+                            <input type="checkbox" name="ai_tts_settings[include_author]" value="1" <?php checked(ai_tts_get_option('include_author'), true); ?> />
+                            <?php echo esc_html__('Include the "By *author name*" after the title, in the TTS for type "posts".', 'ai-text-to-speech'); ?>
+                        </td>
+                    </tr>
+                    <!-- Include "Post Date" in the TTS -->
+                    <tr valign="top">
+                        <th scope="row">
+                            <?php echo esc_html__('Post Date', 'ai-text-to-speech'); ?>
+                        </th>
+                        <td>
+                            <input type="hidden" name="ai_tts_settings[include_date]" value="0" />
+                            <input type="checkbox" name="ai_tts_settings[include_date]" value="1" <?php checked(ai_tts_get_option('include_date'), true); ?> />
+                            <?php echo esc_html__('Include the "Published on *date*" after the title, in the TTS for type "posts".', 'ai-text-to-speech'); ?>
+                        </td>
+                    </tr>
+                </table>
+
+            <br/>
+
             <?php submit_button(); ?>
+
         </form>
 
         <br/><br/>
@@ -300,7 +348,6 @@ function ai_tts_options_page() {
     <?php
 }
 
-// Register and define the settings
 add_action('admin_init', 'ai_tts_admin_init');
 function ai_tts_admin_init() {
     register_setting('ai_tts_settings', 'ai_tts_api_key');

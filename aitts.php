@@ -1,6 +1,6 @@
 <?php
 /**
-* Plugin Name: AI Text-to-Speech
+* Plugin Name: AI Text to Speech
 * Description: Easily generate and display an audio version for your posts using OpenAI's TTS API.
 * Version: 1.0.0
 * Author: Elliot Sowersby, RelyWP
@@ -18,12 +18,16 @@ if ( !defined( 'ABSPATH' ) ) {
 define('AI_TTS_UPLOAD_DIR', WP_CONTENT_DIR . '/uploads/ai-text-to-speech/');
 
 // Includes
-include(plugin_dir_path(__FILE__) . 'inc/generate.php');
 include(plugin_dir_path(__FILE__) . 'inc/save.php');
 include(plugin_dir_path(__FILE__) . 'inc/delete.php');
 include(plugin_dir_path(__FILE__) . 'inc/player.php');
 include(plugin_dir_path(__FILE__) . 'inc/meta-box.php');
 include(plugin_dir_path(__FILE__) . 'inc/options.php');
+
+// Includes (Content Generation)
+include(plugin_dir_path(__FILE__) . 'inc/content/generate.php');
+include(plugin_dir_path(__FILE__) . 'inc/content/replace/twitter.php');
+include(plugin_dir_path(__FILE__) . 'inc/content/replace/numbers.php');
 
 // Activation hook to create the upload directory
 register_activation_hook(__FILE__, 'ai_tts_create_upload_dir');
@@ -40,7 +44,7 @@ add_action('admin_init', 'ai_tts_redirect');
 function ai_tts_redirect() {
     if (get_option('ai_tts_do_activation_redirect', false)) {
         delete_option('ai_tts_do_activation_redirect');
-        wp_redirect(admin_url('options-general.php?page=ai-tts'));
+        wp_redirect(admin_url('options-general.php?page=ai-text-to-speech'));
     }
 }
 

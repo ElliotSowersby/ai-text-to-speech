@@ -1,5 +1,5 @@
 === AI Text to Speech ===
-Contributors: ElliotVS, freemius, RelyWP
+Contributors: ElliotVS, RelyWP
 Tags: ai, text to speech, ai tts, tts, text to audio
 Donate link: https://www.paypal.com/donate/?hosted_button_id=RX28BBH7L5XDS
 Requires at least: 4.7
