@@ -15,7 +15,9 @@ function ai_tts_add_audio_player($content) {
             $audio_player .= '<audio class="ai-tts-player" controls preload="metadata" src="' . esc_url($tts_file_url) . '"
             style="width: 100%; max-width: 790px; display: block; margin-bottom: 0px;"></audio>';
             if($show_player_label && $player_label) {
-                $audio_player .= '<p style="font-size: 10px; text-align: center; margin-bottom: 25px; padding-bottom: 0;">'.esc_html($player_label).'</p>';
+                $audio_player .= '<p style="font-size: 10px; text-align: center; margin-bottom: 25px; padding-bottom: 0;"><span data-nosnippet>'.esc_html($player_label).'</span></p>';
+            } else {
+                $audio_player .= '<br/>';
             }
             $content = $audio_player . $content;
         }
