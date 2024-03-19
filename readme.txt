@@ -15,8 +15,6 @@ A simple plugin that allows you to generate an audio version of your posts using
 
 When the audio has been generated for a post, an audio player will be displayed automatically at the top of your post, which visitors can listen to.
 
-This plugin is relys on a 3rd party service "[OpenAI.com](https://openai.com/)" to generate the audio, so you will need to sign up for an account and get an API key to use this plugin. You can view the OpenAI terms of service [here](https://openai.com/policies/).
-
 ## 👍 Suggestions and Support
 
 If you have any suggestions for additional functionality, need any help, or have found a bug, please create a <a href="https://wordpress.org/support/plugin/ai-text-to-speech/#new-topic-0">support ticket</a>.
@@ -37,7 +35,7 @@ You can get an OpenAI key by signing up for an account at [OpenAI.com](https://o
 
 Yes, the plugin is relys on a 3rd party service "[OpenAI.com](https://openai.com/)" to generate the audio, so you will need to sign up for an account and get an API key to use this plugin. You can view the OpenAI terms of service [here](https://openai.com/policies/).
 
-The plugin may also make calls to Twitter in order to retrieve the text/content from certain posts.
+The plugin may also make calls to [publish.twitter.com](https://publish.twitter.com/)" in order to retrieve the text/content from certain posts. You can view the Twitter terms of service [here](https://twitter.com/en/tos).
 
 = What languages are supported? =
 
