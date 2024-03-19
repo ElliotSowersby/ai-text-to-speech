@@ -9,9 +9,9 @@ if(!defined('ABSPATH')) {
  * @param string $post_content The content to search for Twitter embeds.
  * @return string Updated content with tweet texts.
  */
-function replace_twitter_embeds_with_text($post_content) {
+function ai_tts_replace_twitter_embeds_with_text($post_content) {
     $pattern = '/<!-- wp:embed {.*?"url":"(https:\/\/twitter\.com\/.*?\/status\/\d+)".*?} -->.*?<!-- \/wp:embed -->/s';
-    return preg_replace_callback($pattern, 'fetch_tweet_text', $post_content);
+    return preg_replace_callback($pattern, 'ai_tts_fetch_tweet_text', $post_content);
 }
 
 /**
@@ -20,7 +20,7 @@ function replace_twitter_embeds_with_text($post_content) {
  * @param array $matches Array of regex matches.
  * @return string The tweet text or original embed code on failure.
  */
-function fetch_tweet_text($matches) {
+function ai_tts_fetch_tweet_text($matches) {
     $tweet_url = $matches[1];
     $tweet_id = basename(wp_parse_url($tweet_url, PHP_URL_PATH));
 

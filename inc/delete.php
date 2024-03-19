@@ -12,7 +12,7 @@ function ai_tts_delete_tts_callback() {
         wp_send_json_error(['message' => 'You do not have permission to delete this file.']);
     }
     // Check nonce
-    if (!wp_verify_nonce(esc_html($_POST['nonce']), 'ai_tts_nonce')) {
+    if (!wp_verify_nonce(esc_html(sanitize_text_field(wp_unslash($_POST['nonce']))), 'ai_tts_nonce')) {
         wp_send_json_error(['message' => 'Nonce verification failed']);
     }
 

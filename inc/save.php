@@ -11,10 +11,9 @@ function ai_tts_save_audio_file($response, $post_id) {
         wp_send_json_error(['message' => 'You do not have permission to delete this file.']);
     }
     // Check nonce
-    if (!wp_verify_nonce($_POST['nonce'], 'ai_tts_nonce')) {
+    if (!wp_verify_nonce(esc_html(sanitize_text_field(wp_unslash($_POST['nonce']))), 'ai_tts_nonce')) {
         wp_send_json_error(['message' => 'Nonce verification failed']);
     }
-
     // Check if folder exists, if not create it
     if (!file_exists(AI_TTS_UPLOAD_DIR)) {
         mkdir(AI_TTS_UPLOAD_DIR, 0755, true);

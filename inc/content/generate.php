@@ -16,7 +16,7 @@ function ai_tts_generate_tts_callback() {
         wp_send_json_error(['message' => 'You do not have permission to delete this file.']);
     }
     // Check nonce
-    if (!wp_verify_nonce($_POST['nonce'], 'ai_tts_nonce')) {
+    if (!wp_verify_nonce(esc_html(sanitize_text_field(wp_unslash($_POST['nonce']))), 'ai_tts_nonce')) {
         wp_send_json_error(['message' => 'Nonce verification failed']);
     }
 
@@ -24,7 +24,7 @@ function ai_tts_generate_tts_callback() {
     $post_content = get_post_field('post_content', $post_id);
 
     // If contains Twitter embed block, get the tweet text
-    $post_content = replace_twitter_embeds_with_text($post_content);
+    $post_content = ai_tts_replace_twitter_embeds_with_text($post_content);
 
     // Convert monitary values to words
     $post_content = ai_tts_replace_numbers_with_words($post_content);

@@ -62,7 +62,7 @@ function ai_tts_options_page() {
                             $title = 'title="' . esc_html__('This option is set in wp-config.php', 'ai-text-to-speech') . '"';
                         }
                         ?>
-                        <input type="text" name="ai_tts_api_key" value="<?php echo esc_attr($api_key); ?>" <?php echo $disabled; ?> <?php echo $placeholder; ?> <?php echo $title; ?> />
+                        <input type="text" name="ai_tts_api_key" value="<?php echo esc_attr($api_key); ?>" <?php echo esc_html($disabled); ?> <?php echo esc_html($placeholder); ?> <?php echo esc_html($title); ?> />
                         <!-- API Help Button -->
                         <p>
                             <a class="api-help-button" href="#"><?php echo esc_html__('How to get started', 'ai-text-to-speech'); ?><span class="dashicons dashicons-arrow-down-alt2" style="text-decoration: none; font-size: 14px; margin-top: 5px;"></span></a>

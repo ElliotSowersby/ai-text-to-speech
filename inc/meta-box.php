@@ -55,8 +55,8 @@ function ai_tts_meta_box_callback($post) {
 
     <!-- Generate TTS button -->
     <p id="generate-tts-content" <?php if(get_post_meta($post->ID, 'ai_tts_file_url', true)) { echo 'style="display: none;"'; } ?> style="margin: 0;">
-        <button id="generate-tts" data-postid="<?php echo $post->ID; ?>"
-            data-nonce="<?php echo wp_create_nonce('ai_tts_nonce'); ?>"
+        <button id="generate-tts" data-postid="<?php echo esc_attr($post->ID); ?>"
+            data-nonce="<?php echo esc_html(wp_create_nonce('ai_tts_nonce')); ?>"
             class="button button-primary" style="width: 100%;">
             <?php echo esc_html__('Generate TTS', 'ai-text-to-speech'); ?>
         </button>
@@ -84,7 +84,7 @@ function ai_tts_meta_box_callback($post) {
 
         <p style="margin: 20px 0 5px 0;"><?php echo esc_html__('Generated TTS file:', 'ai-text-to-speech'); ?> <?php if ($tts_file_url && file_exists(str_replace(content_url(), WP_CONTENT_DIR, $tts_file_url))) { ?>
             <span id="tts-file-size">
-                <?php echo round(filesize(str_replace(content_url(), WP_CONTENT_DIR, $tts_file_url)) / 1000, 2); ?> KB
+                <?php echo esc_html(round(filesize(str_replace(content_url(), WP_CONTENT_DIR, $tts_file_url)) / 1000, 2)); ?> KB
             </span>
         <?php } ?></p>
 
@@ -101,8 +101,8 @@ function ai_tts_meta_box_callback($post) {
                 <?php echo esc_html__('Copy File URL', 'ai-text-to-speech'); ?>
             </button>
             <!-- Delete File -->
-            <button id="delete-tts" data-postid="<?php echo $post->ID; ?>"
-                data-nonce="<?php echo wp_create_nonce('ai_tts_nonce'); ?>"
+            <button id="delete-tts" data-postid="<?php echo esc_html($post->ID); ?>"
+                data-nonce="<?php echo esc_html(wp_create_nonce('ai_tts_nonce')); ?>"
                 class="button button-secondary" style="width: 49%;">
                 <?php echo esc_html__('Delete File', 'ai-text-to-speech'); ?>
             </button>
