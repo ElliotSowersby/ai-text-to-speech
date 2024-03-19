@@ -3,7 +3,7 @@ Contributors: ElliotVS, RelyWP
 Tags: ai, text to speech, ai tts, tts, text to audio
 Donate link: https://www.paypal.com/donate/?hosted_button_id=RX28BBH7L5XDS
 Requires at least: 4.7
-Tested up to: 6.4.2
+Tested up to: 6.4.3
 Stable tag: 1.0.0
 License: GPLv3 or later.
 
